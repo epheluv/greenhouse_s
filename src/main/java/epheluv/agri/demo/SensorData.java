@@ -14,7 +14,7 @@ public class SensorData {
     @Id
     @GeneratedValue
     private Long id;
-    private String sensorType; // temperature/humidity
+    private String sensorType;
     private Double value;
     private LocalDateTime timestamp;
 }
