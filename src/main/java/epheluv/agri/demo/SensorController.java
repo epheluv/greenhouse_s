@@ -27,13 +27,18 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SensorController {
     private final SensorRepository repository;
+    private final AlertService alertService;
     
     // 区域数据写入接口
     @PostMapping
     public ResponseEntity<?> saveSensorData(@Valid @RequestBody SensorData data) {
         data.setTimestamp(LocalDateTime.now());
-        // 添加区域校验逻辑（如zoneId格式校验）
-        return ResponseEntity.ok(repository.save(data));
+        SensorData savedData = repository.save(data);
+        
+        // 触发告警规则检查
+        alertService.checkAlerts(savedData);
+        
+        return ResponseEntity.ok(savedData);
     }
 
     // 多维度数据查询接口
