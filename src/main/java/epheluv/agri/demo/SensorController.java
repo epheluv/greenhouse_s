@@ -1,6 +1,7 @@
 package epheluv.agri.demo;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,10 +29,17 @@ import lombok.RequiredArgsConstructor;
 public class SensorController {
     private final SensorRepository repository;
     private final AlertService alertService;
-    
+    private final List<String> allowedZones = Arrays.asList("A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2");
     // 区域数据写入接口
     @PostMapping
     public ResponseEntity<?> saveSensorData(@Valid @RequestBody SensorData data) {
+        String zoneId = data.getZoneId();
+
+        // 检查 zoneId 是否在允许的范围内
+        if (!allowedZones.contains(zoneId)) {
+            return ResponseEntity.badRequest().body("Invalid zoneId. Allowed zoneIds are: " + allowedZones);
+        }
+        
         data.setTimestamp(LocalDateTime.now());
         SensorData savedData = repository.save(data);
         

@@ -1,35 +1,66 @@
 package epheluv.agri.demo.rules
+import epheluv.agri.demo.SensorData;
+import epheluv.agri.demo.AirConditioningSystem;
+import epheluv.agri.demo.DehumidificationSystem;
+import epheluv.agri.demo.VentilationSystem;
 
-import epheluv.agri.demo.SensorData
-
-// 温度告警
-rule "High Temperature Alert"
+rule "High Temperature Trigger Air Conditioning Cooling"
     when
-        $data: SensorData(sensorType == "temperature", value > 35.0)
+        $data : SensorData(
+            sensorType == "temperature",
+            value > 35
+        )
     then
-        System.out.println("[告警] 温度过高！区域：" + $data.getZoneId() + "，温度：" + $data.getValue() + "℃");
+        AirConditioningSystem.activateCooling($data);
 end
 
-// 湿度告警
-rule "Abnormal Humidity Alert"
+rule "Normal Temperature Stop Air Conditioning"
     when
-        $data : SensorData(sensorType == "humidity", value < 30 || value > 70)
+        $data : SensorData(
+            sensorType == "temperature",
+            value <= 30
+        )
     then
-        System.out.println("湿度异常: 区域 " + $data.getZoneId() + " 湿度值 " + $data.getValue());
+        AirConditioningSystem.deactivateCooling($data);
 end
 
-// 气压告警
-rule "Abnormal Pressure Alert"
+rule "High Humidity Trigger Dehumidification"
     when
-        $data : SensorData(sensorType == "pressure", value < 975 || value > 1025)
+        $data : SensorData(
+            sensorType == "humidity",
+            value > 70
+        )
     then
-        System.out.println("气压异常: 区域 " + $data.getZoneId() + " 气压值 " + $data.getValue());
+        DehumidificationSystem.activateDehumidification($data);
 end
 
-//二氧化碳告警
-rule "Abnormal CO2 Alert"
+rule "Normal Humidity Stop Dehumidification"
     when
-        $data : SensorData(sensorType == "co2", value > 1500)
+        $data : SensorData(
+            sensorType == "humidity",
+            value <= 60
+        )
     then
-        System.out.println("二氧化碳浓度过高: 区域 " + $data.getZoneId() + " 二氧化碳浓度值 " + $data.getValue());
+        DehumidificationSystem.deactivateDehumidification($data);
 end
+
+rule "High CO2 Trigger Ventilation"
+    when
+        $data : SensorData(
+            sensorType == "co2",
+            value > 1500
+        )
+    then
+        VentilationSystem.activateVentilation($data);
+end
+
+rule "Normal CO2 Stop Ventilation"
+    when
+        $data : SensorData(
+            sensorType == "co2",
+            value <= 1000
+        )
+    then
+        VentilationSystem.deactivateVentilation($data);
+end
+
