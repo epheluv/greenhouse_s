@@ -3,64 +3,82 @@ import epheluv.agri.demo.SensorData;
 import epheluv.agri.demo.AirConditioningSystem;
 import epheluv.agri.demo.DehumidificationSystem;
 import epheluv.agri.demo.VentilationSystem;
+import epheluv.agri.demo.AlertService
+
+global AlertService alertService
 
 rule "High Temperature Trigger Air Conditioning Cooling"
     when
         $data : SensorData(
             sensorType == "temperature",
-            value > 35
+            value > 35,
+            $zoneId: zoneId,
+            $value: value
         )
     then
         AirConditioningSystem.activateCooling($data);
+        alertService.createAlert($zoneId, "temperature", $value);
 end
 
 rule "Normal Temperature Stop Air Conditioning"
     when
         $data : SensorData(
             sensorType == "temperature",
-            value <= 30
+            value <= 30,
+            $zoneId: zoneId
         )
     then
         AirConditioningSystem.deactivateCooling($data);
+        alertService.resolveAlert($zoneId, "temperature");
 end
 
 rule "High Humidity Trigger Dehumidification"
     when
         $data : SensorData(
             sensorType == "humidity",
-            value > 70
+            value > 70,
+            $zoneId: zoneId,
+            $value: value
         )
     then
         DehumidificationSystem.activateDehumidification($data);
+        alertService.createAlert($zoneId, "humidity", $value);
 end
 
 rule "Normal Humidity Stop Dehumidification"
     when
         $data : SensorData(
             sensorType == "humidity",
-            value <= 60
+            value <= 60,
+            $zoneId: zoneId
         )
     then
         DehumidificationSystem.deactivateDehumidification($data);
+        alertService.resolveAlert($zoneId, "humidity");
 end
 
 rule "High CO2 Trigger Ventilation"
     when
         $data : SensorData(
             sensorType == "co2",
-            value > 1500
+            value > 1500,
+            $zoneId: zoneId,
+            $value: value
         )
     then
         VentilationSystem.activateVentilation($data);
+        alertService.createAlert($zoneId, "co2", $value);
 end
 
 rule "Normal CO2 Stop Ventilation"
     when
         $data : SensorData(
             sensorType == "co2",
-            value <= 1000
+            value <= 1000,
+            $zoneId: zoneId
         )
     then
         VentilationSystem.deactivateVentilation($data);
+        alertService.resolveAlert($zoneId, "co2");
 end
 

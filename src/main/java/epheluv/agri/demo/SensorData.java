@@ -18,7 +18,7 @@ public class SensorData {
     private Long id;
 
     // 传感器基础信息
-    private String sensorType;   // 监测类型：temperature/humidity等
+    private String sensorType;   // 监测类型：temperature/humidity/co2/pressure等
     private Double value;        // 传感器数值
     private LocalDateTime timestamp; // 采集时间
     

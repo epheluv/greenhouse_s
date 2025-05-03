@@ -19,7 +19,7 @@ public class DroolsConfig {
     private static final Logger logger = LoggerFactory.getLogger(DroolsConfig.class);
 
     @Bean
-    public KieContainer kieContainer() {
+    KieContainer kieContainer() {
         try {
             KieServices kieServices = KieServices.Factory.get();
             if (kieServices == null) {
