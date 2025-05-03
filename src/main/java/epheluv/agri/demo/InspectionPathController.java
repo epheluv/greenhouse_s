@@ -21,18 +21,17 @@ public class InspectionPathController {
     @GetMapping
     public ResponseEntity<?> getAllPaths() {
         List<InspectionPath> paths = pathRepository.findAllWithPoints();
-        
+
         // 转换为 DTO 避免循环引用
         List<PathDTO> dtos = paths.stream()
-            .map(p -> new PathDTO(
-                p.getId(),
-                p.getName(),
-                p.getPoints().stream()
-                    .map(point -> new PointDTO(point.getX(), point.getY()))
-                    .collect(Collectors.toList())
-            ))
-            .collect(Collectors.toList());
-        
+                .map(p -> new PathDTO(
+                        p.getId(),
+                        p.getName(),
+                        p.getPoints().stream()
+                                .map(point -> new PointDTO(point.getX(), point.getY()))
+                                .collect(Collectors.toList())))
+                .collect(Collectors.toList());
+
         return ResponseEntity.ok(dtos);
     }
 

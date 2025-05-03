@@ -19,9 +19,7 @@ public class InspectionPath {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name; // 路径名称（可选）
-    
+
     @OneToMany(mappedBy = "path", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<PathPoint> points = new ArrayList<>(); // 必须初始化集合
 }
-
-

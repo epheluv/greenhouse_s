@@ -30,6 +30,7 @@ public class SensorController {
     private final SensorRepository repository;
     private final AlertService alertService;
     private final List<String> allowedZones = Arrays.asList("A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2");
+
     // 区域数据写入接口
     @PostMapping
     public ResponseEntity<?> saveSensorData(@Valid @RequestBody SensorData data) {
@@ -39,29 +40,27 @@ public class SensorController {
         if (!allowedZones.contains(zoneId)) {
             return ResponseEntity.badRequest().body("Invalid zoneId. Allowed zoneIds are: " + allowedZones);
         }
-        
+
         data.setTimestamp(LocalDateTime.now());
         SensorData savedData = repository.save(data);
-        
+
         // 触发告警规则检查
         alertService.checkAlerts(savedData);
-        
+
         return ResponseEntity.ok(savedData);
     }
 
     // 多维度数据查询接口
     @GetMapping("/{type}")
     public ResponseEntity<?> getSensorData(
-        @PathVariable String type,
-        @RequestParam(required = false) String zone,
-        @RequestParam(defaultValue = "20") int limit
-    ) {
+            @PathVariable String type,
+            @RequestParam(required = false) String zone,
+            @RequestParam(defaultValue = "20") int limit) {
         if (zone != null) {
             // 单区域查询
             Pageable pageable = PageRequest.of(0, limit);
             return ResponseEntity.ok(
-                repository.findLatestByZone(type, zone, pageable)
-            );
+                    repository.findLatestByZone(type, zone, pageable));
         } else {
             // 全区域聚合
             return ResponseEntity.ok(repository.findLatestAllZones(type));
@@ -71,18 +70,16 @@ public class SensorController {
     // 数据分析接口
     @GetMapping("/{type}/analytics")
     public List<TrendDTO> getTrendAnalysis(
-        @PathVariable String type,
-        @RequestParam @Past @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start
-) {
+            @PathVariable String type,
+            @RequestParam @Past @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start) {
         return repository.analyzeHistoricalTrend(type, start).stream()
-        .map(result -> new TrendDTO(
-            result[0] != null ? (LocalDateTime) result[0] : LocalDateTime.MIN,
-            result[1] != null ? (Double) result[1] : 0.0,
-            result[2] != null ? (String) result[2] : "Unknown"
-        ))
-            .collect(Collectors.toList());
+                .map(result -> new TrendDTO(
+                        result[0] != null ? (LocalDateTime) result[0] : LocalDateTime.MIN,
+                        result[1] != null ? (Double) result[1] : 0.0,
+                        result[2] != null ? (String) result[2] : "Unknown"))
+                .collect(Collectors.toList());
     }
-    
+
     // DTO类
     @Data
     @AllArgsConstructor

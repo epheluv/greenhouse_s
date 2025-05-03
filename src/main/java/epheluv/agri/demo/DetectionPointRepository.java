@@ -2,4 +2,5 @@ package epheluv.agri.demo;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface DetectionPointRepository extends JpaRepository<DetectionPoint, Long> {}
+public interface DetectionPointRepository extends JpaRepository<DetectionPoint, Long> {
+}

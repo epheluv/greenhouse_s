@@ -17,10 +17,10 @@ public class PathPoint {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Integer x;  // 路径点X坐标
-    private Integer y;  // 路径点Y坐标
+    private Integer x; // 路径点X坐标
+    private Integer y; // 路径点Y坐标
     private Integer orderIndex; // 点的顺序
-    
+
     @ManyToOne
     @JoinColumn(name = "path_id")
     @JsonIgnore // 禁止序列化反向引用

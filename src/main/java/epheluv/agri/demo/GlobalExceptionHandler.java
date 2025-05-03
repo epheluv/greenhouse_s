@@ -8,14 +8,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception e) {
         ErrorResponse error = new ErrorResponse(
-            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-            "服务器内部错误: " + e.getMessage(),
-            LocalDateTime.now()
-        );
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "服务器内部错误: " + e.getMessage(),
+                LocalDateTime.now());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
